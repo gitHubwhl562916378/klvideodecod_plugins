@@ -6,6 +6,7 @@
 
 QT       -= gui
 QT       += quick
+#CONFIG -= qt
 
 TARGET = klvideodecod
 TEMPLATE = lib
@@ -27,11 +28,11 @@ SOURCES += \
     NvDecoder/NvDecoder.cpp \
     NvDecoder/nvidiadecoder.cpp \
     fmgdecoder/ffmpegdecoder.cpp \
-    QmlVideo/nv12render.cpp \
-    QmlVideo/rendermanager.cpp \
-    QmlVideo/videodata.cpp \
-    QmlVideo/videorender.cpp \
-    QmlVideo/yuvrender.cpp
+#    QmlVideo/nv12render.cpp \
+#    QmlVideo/rendermanager.cpp \
+#    QmlVideo/videodata.cpp \
+#    QmlVideo/videorender.cpp \
+#    QmlVideo/yuvrender.cpp
 
 HEADERS += \
         klvideodecod_global.h \ 
@@ -46,12 +47,12 @@ HEADERS += \
     NvDecoder/Utils/NvCodecUtils.h \
     NvDecoder/Utils/NvEncoderCLIOptions.h \
     fmgdecoder/ffmpegdecoder.h \
-    QmlVideo/klvideorender.h \
-    QmlVideo/nv12render.h \
-    QmlVideo/rendermanager.h \
-    QmlVideo/videodata.h \
-    QmlVideo/videorender.h \
-    QmlVideo/yuvrender.h
+#    QmlVideo/klvideorender.h \
+#    QmlVideo/nv12render.h \
+#    QmlVideo/rendermanager.h \
+#    QmlVideo/videodata.h \
+#    QmlVideo/videorender.h \
+#    QmlVideo/yuvrender.h
 
 INCLUDEPATH += /usr/local/cuda/include \
                /usr/local/ffmpeg/include
