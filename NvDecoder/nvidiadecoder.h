@@ -8,7 +8,8 @@
 class KLVIDEODECODSHARED_EXPORT NvidiaDecoder : public Decoder
 {
 public:
-    bool decode(const char* source, std::string &erroStr, std::function<void(AVPixelFormat,unsigned char*,int,int)> frameHandler, std::mutex *mtx = nullptr) override;
+    unsigned char* framePtr() override;
+    bool decode(const char* source, std::string &erroStr, std::function<void(AVPixelFormat, unsigned char *, int, int)> frameHandler, std::mutex *mtx = nullptr) override;
     void stop() override;
 
 private:

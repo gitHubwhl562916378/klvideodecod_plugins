@@ -1,6 +1,11 @@
 #include "nvidiadecoder.h"
 
 simplelogger::Logger *logger = simplelogger::LoggerFactory::CreateConsoleLogger();
+unsigned char *NvidiaDecoder::framePtr()
+{
+    return nullptr;
+}
+
 bool NvidiaDecoder::decode(const char *source, std::string &erroStr, std::function<void(AVPixelFormat, unsigned char *, int, int)> frameHandler, std::mutex *mtx)
 {
     try{

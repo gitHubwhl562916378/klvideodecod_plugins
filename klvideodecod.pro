@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       -= gui
-QT       += quick
+#QT       += quick
 #CONFIG -= qt
 
 TARGET = klvideodecod
@@ -54,12 +54,27 @@ HEADERS += \
 #    QmlVideo/videorender.h \
 #    QmlVideo/yuvrender.h
 
+win32{
+contains(QT_ARCH, i386):{
+}else{
+    INCLUDEPATH += D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/include \
+                   $$(CUDA_PATH)/include
+
+    LIBS += D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/lib/avcodec.lib \
+            D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/lib/avformat.lib \
+            D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/lib/avutil.lib \
+            D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/lib/swresample.lib \
+            D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/lib/swscale.lib \
+            $$(CUDA_PATH)/lib/x64/cuda.lib \
+            $$PWD/NvDecoder/Lib/x64/nvcuvid.lib
+}
+}
+
+unix {
 INCLUDEPATH += /usr/local/cuda/include \
                /usr/local/ffmpeg/include
 LIBS += -L/usr/local/ffmpeg/lib -lnvcuvid -lcuda \
         -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lswresample -lswscale
-
-unix {
     target.path = /usr/lib
     INSTALLS += target
 }

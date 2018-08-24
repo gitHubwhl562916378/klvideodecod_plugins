@@ -259,7 +259,7 @@ int NvDecoder::HandlePictureDecode(CUVIDPICPARAMS *pPicParams) {
         return false;
     }
 
-    NVDEC_API_CALL(cuvidDecodePicture(m_hDecoder, pPicParams));
+    cuvidDecodePicture(m_hDecoder, pPicParams);
     return 1;
 }
 
