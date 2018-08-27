@@ -5,7 +5,11 @@
 #include "NvDecoder.h"
 #include "Utils/FFmpegDemuxer.h"
 #include <vector>
+#ifndef __unix
 class KLVIDEODECODSHARED_EXPORT NvidiaDecoder : public Decoder
+#else
+class NvidiaDecoder : public Decoder
+#endif
 {
 public:
     ~NvidiaDecoder();
