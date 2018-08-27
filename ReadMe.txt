@@ -5,7 +5,7 @@ Video Codec SDK 8.1
 Note: 
      @1Windows 为VS x64工程,由于我的机器没有32位的opencv所以不能使用32位的工程，需要的同事可以自己配置32位的opencv即可开发
 	 
-	 @2支持纯c++接口(跨平台接口) Qt的qml视频播放接口(跨平台接口) Qt的widgets视频播放接口(跨平台接口)
+	 @2支持纯c++接口(跨平台接口) Qt的qml视频播放接口(跨平台接口,使用opengl渲染，需要opengl支持) Qt的widgets视频播放接口(跨平台接口,使用opengl渲染，需要opengl支持)
 	 
 	 @3支持软解和硬解
 	 
