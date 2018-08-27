@@ -15,6 +15,7 @@ class KLVIDEODECODSHARED_EXPORT FFmpegDecoder : public Decoder
 {
 public:
     ~FFmpegDecoder();
+    bool initsize() override;
     unsigned char* framePtr() override;
     bool decode(const char* source, std::string &erroStr, std::function<void(AVPixelFormat,unsigned char*,int,int)> frameHandler,std::mutex *mtx=nullptr) override;
     void stop() override;

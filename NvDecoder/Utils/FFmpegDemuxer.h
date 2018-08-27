@@ -133,13 +133,13 @@ public:
     FFmpegDemuxer(const char *szFilePath) : FFmpegDemuxer(CreateFormatContext(szFilePath)) {}
     FFmpegDemuxer(DataProvider *pDataProvider) : FFmpegDemuxer(CreateFormatContext(pDataProvider)) {}
     ~FFmpegDemuxer() {
-        if (pkt.data) {
-            av_packet_unref(&pkt);
-        }
-        if (pktFiltered.data) {
-            av_packet_unref(&pktFiltered);
-        }
-//        avformat_close_input(&fmtc);
+//        if (pkt.data) {
+//            av_packet_unref(&pkt);
+//        }
+//        if (pktFiltered.data) {
+//            av_packet_unref(&pktFiltered);
+//        }
+        avformat_close_input(&fmtc);
 
         if (avioc) {
             av_freep(&avioc->buffer);

@@ -12,7 +12,7 @@ RenderManager::~RenderManager()
     }
 }
 
-bool RenderManager::registerRender(AVPixelFormat type)
+bool RenderManager::registerRender(AVPixelFormat type, bool horizontal, bool vertical)
 {
     KLvideoRender *r{nullptr};
     switch (type) {
@@ -31,7 +31,7 @@ bool RenderManager::registerRender(AVPixelFormat type)
         return false;
     }
 
-    r->initialize();
+    r->initialize(horizontal,vertical);
     m_rendermap.insert(std::make_pair(type,r));
     return true;
 }

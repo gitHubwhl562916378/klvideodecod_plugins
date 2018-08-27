@@ -5,13 +5,13 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 
-class KLVIDEODECODSHARED_EXPORT Nv12Render : public QOpenGLFunctions, public KLvideoRender
+class Nv12Render : public QOpenGLFunctions, public KLvideoRender
 {
 public:
     Nv12Render() = default;
     Nv12Render(const Nv12Render&) = delete;
     ~Nv12Render();
-    void initialize() override;
+    void initialize(bool horizontal = false, bool vertical = false) override;
     void render(uchar*nv12Ptr, int w, int h) override;
 
 private:

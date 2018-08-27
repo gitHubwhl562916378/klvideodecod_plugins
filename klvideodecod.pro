@@ -4,8 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
-#QT       += quick
+#QT       -= gui
+QT       += core gui quick
 #CONFIG -= qt
 
 TARGET = klvideodecod
@@ -28,11 +28,13 @@ SOURCES += \
     NvDecoder/NvDecoder.cpp \
     NvDecoder/nvidiadecoder.cpp \
     fmgdecoder/ffmpegdecoder.cpp \
-#    QmlVideo/nv12render.cpp \
-#    QmlVideo/rendermanager.cpp \
-#    QmlVideo/videodata.cpp \
-#    QmlVideo/videorender.cpp \
-#    QmlVideo/yuvrender.cpp
+    QmlVideo/videorender.cpp \
+#    Videowidget/klvideowidget.cpp \
+#    Videowidget/videodatacache.cpp \
+    utils/rendermanager.cpp \
+    utils/videodata.cpp \
+    utils/nv12render.cpp \
+    utils/yuvrender.cpp
 
 HEADERS += \
         klvideodecod_global.h \ 
@@ -47,26 +49,42 @@ HEADERS += \
     NvDecoder/Utils/NvCodecUtils.h \
     NvDecoder/Utils/NvEncoderCLIOptions.h \
     fmgdecoder/ffmpegdecoder.h \
-#    QmlVideo/klvideorender.h \
-#    QmlVideo/nv12render.h \
-#    QmlVideo/rendermanager.h \
-#    QmlVideo/videodata.h \
-#    QmlVideo/videorender.h \
-#    QmlVideo/yuvrender.h
+    QmlVideo/videorender.h \
+#    Videowidget/klvideowidget.h \
+#    Videowidget/videodatacache.h \
+    utils/klvideorender.h \
+    utils/rendermanager.h \
+    utils/videodata.h \
+    utils/nv12render.h \
+    utils/yuvrender.h
 
 win32{
 contains(QT_ARCH, i386):{
-}else{
-    INCLUDEPATH += D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/include \
+    INCLUDEPATH += $$PWD/3rd/ffmpeg/Win32/include \
                    $$(CUDA_PATH)/include
 
-    LIBS += D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/lib/avcodec.lib \
-            D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/lib/avformat.lib \
-            D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/lib/avutil.lib \
-            D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/lib/swresample.lib \
-            D:/git/KoalaClient/klvideowidget/klvideodata/3rd/ffmpeg/x64/lib/swscale.lib \
+    LIBS += $$PWD/3rd/ffmpeg/Win32/lib/avcodec.lib \
+            $$PWD/3rd/ffmpeg/Win32/lib/avformat.lib \
+            $$PWD/3rd/ffmpeg/Win32/lib/avutil.lib \
+            $$PWD/3rd/ffmpeg/Win32/lib/swresample.lib \
+            $$PWD/3rd/ffmpeg/Win32/lib/swscale.lib \
+            $$(CUDA_PATH)/lib/Win32/cuda.lib \
+            $$PWD/NvDecoder/Lib/Win32/nvcuvid.lib
+    CONFIG(debug,release|debug):DESTDIR = $$PWD/debug/Win32
+    CONFIG(release,release|debug):DESTDIR = $$PWD/debug/Win32
+}else{
+    INCLUDEPATH += $$PWD/3rd/ffmpeg/x64/include \
+                   $$(CUDA_PATH)/include
+
+    LIBS += $$PWD/3rd/ffmpeg/x64/lib/avcodec.lib \
+            $$PWD/3rd/ffmpeg/x64/lib/avformat.lib \
+            $$PWD/3rd/ffmpeg/x64/lib/avutil.lib \
+            $$PWD/3rd/ffmpeg/x64/lib/swresample.lib \
+            $$PWD/3rd/ffmpeg/x64/lib/swscale.lib \
             $$(CUDA_PATH)/lib/x64/cuda.lib \
             $$PWD/NvDecoder/Lib/x64/nvcuvid.lib
+    CONFIG(debug,release|debug):DESTDIR = D:/git/KoalaClient/debug
+    CONFIG(release,release|debug):DESTDIR = D:/git/KoalaClient/debug
 }
 }
 

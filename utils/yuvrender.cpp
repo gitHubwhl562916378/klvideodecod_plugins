@@ -1,12 +1,11 @@
 #include "yuvrender.h"
-#include <QDebug>
 
 YuvRender::~YuvRender()
 {
     glDeleteTextures(sizeof(textures),textures);
 }
 
-void YuvRender::initialize()
+void YuvRender::initialize(bool horizontal, bool vertical)
 {
     initializeOpenGLFunctions();
     const char *vsrc =
@@ -41,21 +40,75 @@ void YuvRender::initialize()
     program.addCacheableShaderFromSourceCode(QOpenGLShader::Fragment,fsrc);
     program.link();
 
-    GLfloat points[]{
-        -1.0f, 1.0f,
-         1.0f, 1.0f,
-         1.0f, -1.0f,
-        -1.0f, -1.0f,
+    if(horizontal){
+        if(vertical){
+            GLfloat points[]{
+                -1.0f, 1.0f,
+                 1.0f, 1.0f,
+                 1.0f, -1.0f,
+                -1.0f, -1.0f,
 
-        0.0f,1.0f,
-        1.0f,1.0f,
-        1.0f,0.0f,
-        0.0f,0.0f
-    };
+                1.0f,1.0f,
+                0.0f,1.0f,
+                0.0f,0.0f,
+                1.0f,0.0f
+            };
 
-    vbo.create();
-    vbo.bind();
-    vbo.allocate(points,sizeof(points));
+            vbo.create();
+            vbo.bind();
+            vbo.allocate(points,sizeof(points));
+        }else{
+            GLfloat points[]{
+                -1.0f, 1.0f,
+                 1.0f, 1.0f,
+                 1.0f, -1.0f,
+                -1.0f, -1.0f,
+
+                1.0f,0.0f,
+                0.0f,0.0f,
+                0.0f,1.0f,
+                1.0f,1.0f
+            };
+
+            vbo.create();
+            vbo.bind();
+            vbo.allocate(points,sizeof(points));
+        }
+    }else{
+        if(vertical){
+            GLfloat points[]{
+                -1.0f, 1.0f,
+                 1.0f, 1.0f,
+                 1.0f, -1.0f,
+                -1.0f, -1.0f,
+
+                0.0f,1.0f,
+                1.0f,1.0f,
+                1.0f,0.0f,
+                0.0f,0.0f
+            };
+
+            vbo.create();
+            vbo.bind();
+            vbo.allocate(points,sizeof(points));
+        }else{
+            GLfloat points[]{
+                -1.0f, 1.0f,
+                 1.0f, 1.0f,
+                 1.0f, -1.0f,
+                -1.0f, -1.0f,
+
+                0.0f,0.0f,
+                1.0f,0.0f,
+                1.0f,1.0f,
+                0.0f,1.0f
+            };
+
+            vbo.create();
+            vbo.bind();
+            vbo.allocate(points,sizeof(points));
+        }
+    }
 
     GLuint id[3];
     glGenTextures(3,id);
@@ -81,34 +134,34 @@ void YuvRender::render(uchar *yuvPtr, int w, int h)
     program.setAttributeBuffer("vertexIn",GL_FLOAT, 0, 2, 2*sizeof(GLfloat));
     program.setAttributeBuffer("textureIn",GL_FLOAT,2 * 4 * sizeof(GLfloat),2,2*sizeof(GLfloat));
 
-    glActiveTexture(GL_TEXTURE0 + 2);
+    glActiveTexture(GL_TEXTURE0 + 0);
     glBindTexture(GL_TEXTURE_2D,idY);
     glTexImage2D(GL_TEXTURE_2D,0,GL_RED,w,h,0,GL_RED,GL_UNSIGNED_BYTE,yuvPtr);
     //https://blog.csdn.net/xipiaoyouzi/article/details/53584798 纹理参数解析
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D,idU);
     glTexImage2D(GL_TEXTURE_2D,0,GL_RED,w >> 1, h >> 1,0,GL_RED,GL_UNSIGNED_BYTE,yuvPtr + w * h);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glActiveTexture(GL_TEXTURE0 + 0);
+    glActiveTexture(GL_TEXTURE0 + 2);
     glBindTexture(GL_TEXTURE_2D,idV);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w >> 1, h >> 1, 0, GL_RED, GL_UNSIGNED_BYTE, yuvPtr+w*h*5/4);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR );
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    program.setUniformValue("tex_y",2);
+    program.setUniformValue("tex_y",0);
     program.setUniformValue("tex_u",1);
-    program.setUniformValue("tex_v",0);
+    program.setUniformValue("tex_v",2);
     glDrawArrays(GL_QUADS,0,4);
     program.disableAttributeArray("vertexIn");
     program.disableAttributeArray("textureIn");

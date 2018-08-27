@@ -5,13 +5,13 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 
-class KLVIDEODECODSHARED_EXPORT YuvRender : public QOpenGLFunctions , public KLvideoRender
+class YuvRender : public QOpenGLFunctions , public KLvideoRender
 {
 public:
     YuvRender() = default;
     YuvRender(const YuvRender &) = delete;
     ~YuvRender();
-    void initialize() override;
+    void initialize(bool horizontal = false, bool vertical = false) override;
     void render(uchar*yuvPtr, int w, int h) override;
 
 private:

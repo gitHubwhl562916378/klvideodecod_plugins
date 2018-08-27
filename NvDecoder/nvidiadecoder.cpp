@@ -1,29 +1,85 @@
 #include "nvidiadecoder.h"
 
 simplelogger::Logger *logger = simplelogger::LoggerFactory::CreateConsoleLogger();
+std::vector<std::pair<CUcontext,std::string>> NvidiaDecoder::m_ctxV;
+NvidiaDecoder::~NvidiaDecoder()
+{
+//    int n = m_ctxV.size();
+//    for(int i = 0; i < n; i++){
+//        cuCtxDestroy(m_ctxV.back().first);
+//        m_ctxV.pop_back();
+//    }
+    if(m_nvdecod)
+    delete m_nvdecod;
+}
+
+bool NvidiaDecoder::initsize()
+{
+    static bool isInitsized = false;
+    if(!isInitsized){
+        ck(cuInit(0));
+        int nGpu = 0;
+        ck(cuDeviceGetCount(&nGpu));
+        for(int i = 0; i < nGpu; i++){
+            CUdevice cuDevice = 0;
+            ck(cuDeviceGet(&cuDevice, i));
+            char szDeviceName[80];
+            ck(cuDeviceGetName(szDeviceName, sizeof(szDeviceName), cuDevice));
+            LOG(INFO) << "Find Gpu: " << szDeviceName << std::endl;
+            CUcontext cuContext = NULL;
+            ck(cuCtxCreate(&cuContext, CU_CTX_SCHED_BLOCKING_SYNC, cuDevice));
+
+            CUVIDDECODECAPS videoDecodeCaps = {};
+            videoDecodeCaps.eCodecType = cudaVideoCodec_H264;
+            videoDecodeCaps.eChromaFormat = cudaVideoChromaFormat_420;
+            videoDecodeCaps.nBitDepthMinus8 = 0;
+            if (cuvidGetDecoderCaps(&videoDecodeCaps) == CUDA_SUCCESS){
+                LOG(INFO) << "cuvid Decoder Caps nMaxWidth " << videoDecodeCaps.nMaxWidth << " nMaxHeigth " << videoDecodeCaps.nMaxHeight << std::endl;
+                if(videoDecodeCaps.nMaxWidth >= 1920 && videoDecodeCaps.nMaxHeight >= 1080){
+                    m_ctxV.push_back({cuContext,szDeviceName});
+                }
+            }
+        }
+        isInitsized = true;
+    }
+
+    if(m_ctxV.empty()){
+        return false;
+    }
+
+    return true;
+}
+
 unsigned char *NvidiaDecoder::framePtr()
 {
-    return nullptr;
+    return m_ptr;
 }
 
 bool NvidiaDecoder::decode(const char *source, std::string &erroStr, std::function<void(AVPixelFormat, unsigned char *, int, int)> frameHandler, std::mutex *mtx)
 {
+    if(!m_ctxV.size()){
+        return false;
+    }
+
     try{
         m_isRun = true;
+        std::pair<CUcontext,std::string> &v = m_ctxV.at(m_curIndex++ % m_ctxV.size());
+        std::cout << "Use Contex in " << v.second << std::endl;
         FFmpegDemuxer demuxer(source);
-        NvDecoder dec(getContext(), demuxer.GetWidth(), demuxer.GetHeight(), false, FFmpeg2NvCodecId(demuxer.GetVideoCodec()),mtx);
+        m_nvdecod = new NvDecoder(v.first, demuxer.GetWidth(), demuxer.GetHeight(), false, FFmpeg2NvCodecId(demuxer.GetVideoCodec()),mtx);
         int nVideoBytes = 0, nFrameReturned = 0, nFrame = 0;
         uint8_t *pVideo = NULL;
         uint8_t **ppFrame;
         do {
             demuxer.Demux(&pVideo, &nVideoBytes);
-            dec.Decode(pVideo, nVideoBytes, &ppFrame, &nFrameReturned);
+            m_nvdecod->Decode(pVideo, nVideoBytes, &ppFrame, &nFrameReturned);
             if (!nFrame && nFrameReturned)
-                LOG(INFO) << dec.GetVideoInfo();
+                LOG(INFO) << m_nvdecod->GetVideoInfo();
 
             for (int i = 0; i < nFrameReturned; i++) {
-                if (dec.GetBitDepth() == 8){
-                    frameHandler(AV_PIX_FMT_NV12,ppFrame[i],dec.GetWidth(),dec.GetHeight());
+                if (m_nvdecod->GetBitDepth() == 8){
+                    m_ptr = ppFrame[i];
+                    frameHandler(AV_PIX_FMT_NV12,m_ptr,m_nvdecod->GetWidth(),m_nvdecod->GetHeight());
                 }else{
 //                    P016ToBgra32((uint8_t *)ppFrame[i], 2 * dec.GetWidth(), (uint8_t *)dpFrame, nPitch, dec.GetWidth(), dec.GetHeight());
                 }
@@ -41,9 +97,4 @@ bool NvidiaDecoder::decode(const char *source, std::string &erroStr, std::functi
 void NvidiaDecoder::stop()
 {
     m_isRun = false;
-}
-
-CUcontext NvidiaDecoder::getContext()
-{
-    return ContextManager::pInstance()->getContext();
 }

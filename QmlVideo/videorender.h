@@ -1,12 +1,12 @@
 #ifndef VIDEORENDER_H
 #define VIDEORENDER_H
-#include "klvideorender.h"
+#include "../utils/klvideorender.h"
 #include <QQuickFramebufferObject>
 #include <QImage>
-#include <QMutex>
+#include <mutex>
 
 class VideoData;
-class KLVIDEODECODSHARED_EXPORT VideoFboRenderer : public QQuickFramebufferObject::Renderer
+class VideoFboRenderer : public QQuickFramebufferObject::Renderer
 {
 public:
     VideoFboRenderer();
@@ -16,20 +16,20 @@ public:
 
 private:
     KLvideoRenderManager *m_renderM{nullptr};
-    QMutex *m_mtx{nullptr};
+    std::mutex *m_mtx{nullptr};
     AVPixelFormat m_format;
     unsigned char* m_ptr{nullptr};
     int m_width = 0,m_height = 0;
 };
 
-class VideoRender : public QQuickFramebufferObject
+class KLVIDEODECODSHARED_EXPORT VideoRender : public QQuickFramebufferObject
 {
     Q_OBJECT
     Q_PROPERTY(QString videoSource READ videoSource WRITE setVideoSource NOTIFY videoSourceChanged)
     Q_PROPERTY(QString error READ error WRITE setError NOTIFY errorOcured)
     Q_PROPERTY(QString decoder READ decoder WRITE setDecoder NOTIFY decoderChanged)
 public:
-    QMutex *m_mtx{nullptr};
+    std::mutex *m_mtx{nullptr};
     AVPixelFormat m_format;
     unsigned char* m_ptr{nullptr};
     int m_width = 0,m_height = 0;
@@ -51,7 +51,7 @@ signals:
     void decoderChanged();
 
 private:
-    QString m_videoSource,m_errorStr;
+    QString m_videoSource,m_errorStr,m_decoderName;
     bool m_isplaying = false;
     VideoData *m_videoData{nullptr};
     unsigned char *m_rgba{nullptr};

@@ -1,6 +1,6 @@
 #include "videorender.h"
-#include "rendermanager.h"
-#include "videodata.h"
+#include "../utils/rendermanager.h"
+#include "../utils/videodata.h"
 #include <memory>
 extern "C"
 {
@@ -16,37 +16,6 @@ extern "C"
 VideoRender::VideoRender(QQuickItem *parent):
     QQuickFramebufferObject(parent)
 {
-    m_videoData = new VideoData(this);
-    connect(m_videoData,&VideoData::sigError,this,[this](QString s){
-        m_ptr = nullptr;
-        m_width = 0;
-        m_height = 0;
-        m_isplaying = false;
-        update();
-        setError(s);});
-    connect(m_videoData,&VideoData::sigVideoStoped,this,[this]{
-        m_ptr = nullptr;
-        m_width = 0;
-        m_height = 0;
-        m_isplaying = false;
-        update();
-        emit videoStoped();
-    });
-    connect(m_videoData,&VideoData::sigVideoStarted,this,[this](int format,unsigned char * ptr, int w, int h, QMutex *mtx){
-        m_format = AVPixelFormat(format);
-        m_ptr = ptr;
-        m_width = w;
-        m_height = h;
-        m_mtx = mtx;
-        m_isplaying = true;
-        if(m_rgba){
-            delete m_rgba;
-        }
-        m_rgba = new unsigned char[4 * w * h];
-        emit videoStarted();
-        update();
-    });
-    connect(m_videoData,SIGNAL(sigFrameLoaded()),this,SLOT(update()));
 }
 
 VideoRender::~VideoRender()
@@ -59,19 +28,61 @@ VideoRender::~VideoRender()
 
 void VideoRender::play()
 {
-    if(m_videoData->isRunning()){
-        return;
+    if(m_videoData){
+        stop();
     }
 
+    m_videoData = new VideoData(this);
+    connect(m_videoData,&VideoData::sigError,this,[this](QString s){
+        m_ptr = nullptr;
+        m_width = 0;
+        m_height = 0;
+        m_isplaying = false;
+        update();
+        setError(s);});
+    connect(m_videoData,&VideoData::finished,this,[this]{
+        m_ptr = nullptr;
+        m_width = 0;
+        m_height = 0;
+        m_isplaying = false;
+        update();
+        emit videoStoped();
+    });
+    connect(m_videoData,&VideoData::sigVideoStarted,this,[this]{
+        m_format = AVPixelFormat(m_videoData->m_fmt);
+        m_ptr = m_videoData->m_ptr;
+        m_width = m_videoData->m_width;
+        m_height = m_videoData->m_height;
+        m_mtx = m_videoData->m_mtx;
+        m_isplaying = true;
+        if(m_rgba){
+            delete m_rgba;
+        }
+        m_rgba = new unsigned char[4 * m_width * m_height];
+        emit videoStarted();
+        update();
+    });
+    connect(m_videoData,&VideoData::sigFrameLoaded,this,[this]{
+        if(m_videoData){
+            m_ptr = m_videoData->framePtr();
+        }else{
+            m_ptr = nullptr;
+        }
+        update();
+    });
+    connect(m_videoData,&VideoData::finished,this,[this]{m_videoData->deleteLater();m_videoData = nullptr;});
+
     m_videoData->setVideoSource(m_videoSource);
+    m_videoData->setDecoderName(m_decoderName);
     m_videoData->start();
 }
 
 void VideoRender::stop()
 {
-    m_videoData->requestInterruption();
-    m_videoData->quit();
-    m_videoData->wait();
+    if(m_videoData){
+        m_videoData->disconnect(this);
+        m_videoData->requestInterruption();
+    }
 }
 
 bool VideoRender::isPlaying()
@@ -140,12 +151,12 @@ void VideoRender::setError(QString s)
 
 QString VideoRender::decoder()
 {
-    return m_videoData->decoder();
+    return m_decoderName;
 }
 
 void VideoRender::setDecoder(QString d)
 {
-    m_videoData->setDecodeName(d);
+    m_decoderName = d;
 }
 
 VideoFboRenderer::VideoFboRenderer()
@@ -171,7 +182,7 @@ void VideoFboRenderer::synchronize(QQuickFramebufferObject *item)
 void VideoFboRenderer::render()
 {
     if(!m_renderM->hasRender(m_format)){
-        m_renderM->registerRender(m_format);
+        m_renderM->registerRender(m_format,false,true);
     }
 
     if(m_mtx) m_mtx->lock();

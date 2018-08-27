@@ -9,7 +9,7 @@ public:
     RenderManager() = default;
     RenderManager(const RenderManager&) = delete;
     ~RenderManager();
-    bool registerRender(AVPixelFormat) override;
+    bool registerRender(AVPixelFormat,bool horizontal = false, bool vertical = false) override;
     bool hasRender(AVPixelFormat) override;
     void render(AVPixelFormat,unsigned char*,int,int) override;
 

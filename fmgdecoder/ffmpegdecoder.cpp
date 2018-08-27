@@ -15,6 +15,11 @@ FFmpegDecoder::~FFmpegDecoder()
     }
 }
 
+bool FFmpegDecoder::initsize()
+{
+    return true;
+}
+
 unsigned char *FFmpegDecoder::framePtr()
 {
     return m_buffer;
