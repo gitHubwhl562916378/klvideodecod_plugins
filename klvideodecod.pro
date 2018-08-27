@@ -5,8 +5,8 @@
 #-------------------------------------------------
 
 #QT       -= gui
-QT       += quick
-#CONFIG -= qt
+#QT       += widgets
+CONFIG -= qt
 
 TARGET = klvideodecod
 TEMPLATE = lib
@@ -28,13 +28,13 @@ SOURCES += \
     NvDecoder/NvDecoder.cpp \
     NvDecoder/nvidiadecoder.cpp \
     fmgdecoder/ffmpegdecoder.cpp \
-    QmlVideo/videorender.cpp \
+#    QmlVideo/videorender.cpp \
 #    Videowidget/klvideowidget.cpp \
 #    Videowidget/videodatacache.cpp \
-    utils/rendermanager.cpp \
-    utils/videodata.cpp \
-    utils/nv12render.cpp \
-    utils/yuvrender.cpp
+#    utils/rendermanager.cpp \
+#    utils/videodata.cpp \
+#    utils/nv12render.cpp \
+#    utils/yuvrender.cpp
 
 HEADERS += \
         klvideodecod_global.h \ 
@@ -49,14 +49,14 @@ HEADERS += \
     NvDecoder/Utils/NvCodecUtils.h \
     NvDecoder/Utils/NvEncoderCLIOptions.h \
     fmgdecoder/ffmpegdecoder.h \
-    QmlVideo/videorender.h \
+#    QmlVideo/videorender.h \
 #    Videowidget/klvideowidget.h \
 #    Videowidget/videodatacache.h \
-    utils/klvideorender.h \
-    utils/rendermanager.h \
-    utils/videodata.h \
-    utils/nv12render.h \
-    utils/yuvrender.h
+#    utils/klvideorender.h \
+#    utils/rendermanager.h \
+#    utils/videodata.h \
+#    utils/nv12render.h \
+#    utils/yuvrender.h
 
 win32{
 contains(QT_ARCH, i386):{
@@ -83,8 +83,8 @@ contains(QT_ARCH, i386):{
             $$PWD/3rd/ffmpeg/x64/lib/swscale.lib \
             $$(CUDA_PATH)/lib/x64/cuda.lib \
             $$PWD/NvDecoder/Lib/x64/nvcuvid.lib
-    CONFIG(debug,release|debug):DESTDIR = D:/git/KoalaClient/debug
-    CONFIG(release,release|debug):DESTDIR = D:/git/KoalaClient/debug
+    CONFIG(debug,release|debug):DESTDIR = $$PWD/debug/x64
+    CONFIG(release,release|debug):DESTDIR = $$PWD/debug/x64
 }
 }
 

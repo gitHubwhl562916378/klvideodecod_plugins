@@ -1,5 +1,5 @@
 #include "yuvrender.h"
-
+#include <iostream>
 YuvRender::~YuvRender()
 {
     glDeleteTextures(sizeof(textures),textures);
@@ -133,7 +133,6 @@ void YuvRender::render(uchar *yuvPtr, int w, int h)
     program.enableAttributeArray("textureIn");
     program.setAttributeBuffer("vertexIn",GL_FLOAT, 0, 2, 2*sizeof(GLfloat));
     program.setAttributeBuffer("textureIn",GL_FLOAT,2 * 4 * sizeof(GLfloat),2,2*sizeof(GLfloat));
-
     glActiveTexture(GL_TEXTURE0 + 2);
     glBindTexture(GL_TEXTURE_2D,idY);
     glTexImage2D(GL_TEXTURE_2D,0,GL_RED,w,h,0,GL_RED,GL_UNSIGNED_BYTE,yuvPtr);

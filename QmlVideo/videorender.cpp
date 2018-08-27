@@ -1,6 +1,7 @@
 #include "videorender.h"
 #include "../utils/rendermanager.h"
 #include "../utils/videodata.h"
+#include <QOpenGLFramebufferObjectFormat>
 #include <memory>
 extern "C"
 {
@@ -193,4 +194,12 @@ void VideoFboRenderer::render()
     if(m_mtx) m_mtx->lock();
     m_renderM->render(m_format,m_ptr,m_width,m_height);
     if(m_mtx) m_mtx->unlock();
+}
+
+QOpenGLFramebufferObject *VideoFboRenderer::createFramebufferObject(const QSize &size)
+{
+    QOpenGLFramebufferObjectFormat format;
+    format.setAttachment(QOpenGLFramebufferObject::CombinedDepthStencil);
+    format.setSamples(4);
+    return new QOpenGLFramebufferObject(size,format);
 }

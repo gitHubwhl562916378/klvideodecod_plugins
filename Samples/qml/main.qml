@@ -6,12 +6,27 @@ ApplicationWindow {
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
+    title: qsTr("rtsp video")
 
     VideoRender{
+        id: rtspVieo
         anchors.fill: parent
-        decoder: "h264_cuvid" //h264_cuvid硬解 空字符串软解
-        videoSource: "rtsp://admin:123ABCabc@192.168.2.239/h264/ch1/main/av_stream"
+        videoSource: "rtsp:192.168.2.22:5554/1"
+        decoder: "h264_cuvid" //传空或不传为软解；传h264_cuvid为硬解，当系统不支持时自动变为软解
+        Text{
+            id: errorText
+            anchors.centerIn: parent
+            font.pixelSize: 14
+            color: "red"
+        }
+        onVideoStarted: {
+            errorText.visible = false
+        }
+        onErrorOcured: {
+            errorText.visible = true
+            errorText.text = rtspVieo.error
+        }
+
         Component.onCompleted: {
             play()
         }

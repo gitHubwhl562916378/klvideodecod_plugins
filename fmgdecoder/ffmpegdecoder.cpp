@@ -1,6 +1,5 @@
 ﻿#include "ffmpegdecoder.h"
 #include <iostream>
-#include <QDebug>
 
 FFmpegDecoder::~FFmpegDecoder()
 {

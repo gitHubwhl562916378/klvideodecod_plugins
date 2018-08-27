@@ -27,7 +27,21 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+win32{
+contains(QT_ARCH, i386):{
+INCLUDEPATH += $$PWD/../../package/include \
+               $$PWD/../../3rd/ffmpeg/Win32/include
+LIBS += $$PWD/../../package/lib/Win32/qml/klvideodecod.lib
+}else{
+INCLUDEPATH += $$PWD/../../package/include \
+               $$PWD/../../3rd/ffmpeg/x64/include
+LIBS += $$PWD/../../package/lib/x64/qml/klvideodecod.lib
+}
+}
+
+unix{
 INCLUDEPATH +=/usr/local/ffmpeg/include \
               /usr/local/klvideodecod/include
 
 LIBS += -L$$PWD/../.. -lklvideodecod\
+}
