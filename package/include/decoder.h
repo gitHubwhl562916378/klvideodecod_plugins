@@ -10,7 +10,11 @@ extern "C"
     #include <libavutil/pixfmt.h>
 }
 
+#ifndef __unix
 class KLVIDEODECODSHARED_EXPORT Decoder
+#else
+class Decoder
+#endif
 {
 public:
     explicit Decoder() = default;
@@ -25,7 +29,11 @@ public:
 
 #include "NvDecoder/nvidiadecoder.h"
 #include "fmgdecoder/ffmpegdecoder.h"
+#ifndef __unix
 class KLVIDEODECODSHARED_EXPORT Klvideodecod
+#else
+class Klvideodecod
+#endif
 {
 public:
     explicit Klvideodecod() = default;

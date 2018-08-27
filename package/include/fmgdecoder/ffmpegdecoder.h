@@ -11,7 +11,11 @@ extern "C"
     #include <libswscale/swscale.h>
     #include <libavutil/pixfmt.h>
 }
+#ifndef __unix
 class KLVIDEODECODSHARED_EXPORT FFmpegDecoder : public Decoder
+#else
+class FFmpegDecoder : public Decoder
+#endif
 {
 public:
     ~FFmpegDecoder();

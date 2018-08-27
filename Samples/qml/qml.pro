@@ -40,8 +40,8 @@ LIBS += $$PWD/../../package/lib/x64/qml/klvideodecod.lib
 }
 
 unix{
-INCLUDEPATH +=/usr/local/ffmpeg/include \
-              /usr/local/klvideodecod/include
+INCLUDEPATH += $$PWD/../../package/include \
+               $$PWD/../../3rd/ffmpeg/linux/include
 
-LIBS += -L$$PWD/../.. -lklvideodecod\
+LIBS += -L$$PWD/../../package/lib/linux/qml -lklvideodecod
 }
