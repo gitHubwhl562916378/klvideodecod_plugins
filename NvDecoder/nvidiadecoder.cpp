@@ -25,19 +25,22 @@ bool NvidiaDecoder::initsize()
             ck(cuDeviceGet(&cuDevice, i));
             char szDeviceName[80];
             ck(cuDeviceGetName(szDeviceName, sizeof(szDeviceName), cuDevice));
-            LOG(INFO) << "Find Gpu: " << szDeviceName << std::endl;
             CUcontext cuContext = NULL;
             ck(cuCtxCreate(&cuContext, CU_CTX_SCHED_BLOCKING_SYNC, cuDevice));
+            LOG(INFO) << "Find Gpu: " << szDeviceName << std::endl;
 
             CUVIDDECODECAPS videoDecodeCaps = {};
             videoDecodeCaps.eCodecType = cudaVideoCodec_H264;
             videoDecodeCaps.eChromaFormat = cudaVideoChromaFormat_420;
             videoDecodeCaps.nBitDepthMinus8 = 0;
-            if (cuvidGetDecoderCaps(&videoDecodeCaps) == CUDA_SUCCESS){
+            CUresult resCode;
+            if ((resCode = cuvidGetDecoderCaps(&videoDecodeCaps)) == CUDA_SUCCESS){
                 LOG(INFO) << "cuvid Decoder Caps nMaxWidth " << videoDecodeCaps.nMaxWidth << " nMaxHeigth " << videoDecodeCaps.nMaxHeight << std::endl;
                 if(videoDecodeCaps.nMaxWidth >= 1920 && videoDecodeCaps.nMaxHeight >= 1080){
                     m_ctxV.push_back({cuContext,szDeviceName});
                 }
+            }else{
+                LOG(INFO) << "cuvidGetDecoderCaps failed, Code: " << resCode << std::endl;
             }
         }
         isInitsized = true;
@@ -63,7 +66,7 @@ bool NvidiaDecoder::decode(const char *source, std::string &erroStr, std::functi
 
     try{
         m_isRun = true;
-        std::pair<CUcontext,std::string> &v = m_ctxV.at(m_curIndex++ % m_ctxV.size());
+        std::pair<CUcontext,std::string> v = m_ctxV.at(m_curIndex++ % m_ctxV.size());
         std::cout << "Use Contex in " << v.second << std::endl;
         FFmpegDemuxer demuxer(source);
         m_nvdecod = new NvDecoder(v.first, demuxer.GetWidth(), demuxer.GetHeight(), false, FFmpeg2NvCodecId(demuxer.GetVideoCodec()),mtx);

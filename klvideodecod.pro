@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 #QT       -= gui
-QT       += core gui quick
+QT       += quick
 #CONFIG -= qt
 
 TARGET = klvideodecod

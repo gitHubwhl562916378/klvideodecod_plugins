@@ -21,6 +21,10 @@ VideoRender::VideoRender(QQuickItem *parent):
 VideoRender::~VideoRender()
 {
     stop();
+    if(m_videoData){
+        m_videoData->quit();
+        m_videoData->wait();
+    }
     if(m_rgba){
         delete m_rgba;
     }
@@ -49,6 +53,7 @@ void VideoRender::play()
         emit videoStoped();
     });
     connect(m_videoData,&VideoData::sigVideoStarted,this,[this]{
+        qDebug() << "video started";
         m_format = AVPixelFormat(m_videoData->m_fmt);
         m_ptr = m_videoData->m_ptr;
         m_width = m_videoData->m_width;

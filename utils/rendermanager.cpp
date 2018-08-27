@@ -32,6 +32,7 @@ bool RenderManager::registerRender(AVPixelFormat type, bool horizontal, bool ver
     }
 
     r->initialize(horizontal,vertical);
+    std::cout << "render registered " << type << std::endl;
     m_rendermap.insert(std::make_pair(type,r));
     return true;
 }

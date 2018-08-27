@@ -62,6 +62,7 @@ void VideoData::run()
     if(m_decoderName == "h264_cuvid"){
         m_decoder = Klvideodecod::createDecoder<NvidiaDecoder>();
         if(!m_decoder->initsize()){
+            delete m_decoder;
             m_decoder = Klvideodecod::createDecoder<FFmpegDecoder>();
         }
     }else{
