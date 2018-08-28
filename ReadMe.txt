@@ -1,6 +1,7 @@
 Video Codec SDK 8.1
    * Windows: N卡 Driver version 390.77  or higher
    * Linux:   N卡 Driver version 390.25 or higher
+   * 如果1080p显示器，6显示屏显存2G及以上(主要是开启轮循时，有12个窗口要视频渲染，同时可能有6路或12路视频解码),如果大屏显示屏分辨率更高则需要更大的显存，以此满足纹理需要
 
 Note: 
      @1Windows 为VS x64工程,由于我的机器没有32位的opencv所以不能使用32位的工程，需要的同事可以自己配置32位的opencv即可开发
