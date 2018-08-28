@@ -90,6 +90,13 @@ bool NvidiaDecoder::decode(const char *source, std::string &erroStr, std::functi
             nFrame += nFrameReturned;
         } while (nVideoBytes && m_isRun);
         std::cout << "Total frame decoded: " << nFrame << std::endl;
+        if(m_isRun){
+            if(!nVideoBytes){
+                erroStr = "AVERROR_EOF";
+                return false;
+            }
+        }
+
         return true;
     }catch(std::exception &e){
         erroStr = e.what();

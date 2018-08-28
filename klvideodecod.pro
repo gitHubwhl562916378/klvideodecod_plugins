@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 #QT       -= gui
-QT       += quick
+QT       +=  widgets
 #CONFIG -= qt
 
 TARGET = klvideodecod
@@ -28,9 +28,9 @@ SOURCES += \
     NvDecoder/NvDecoder.cpp \
     NvDecoder/nvidiadecoder.cpp \
     fmgdecoder/ffmpegdecoder.cpp \
-    QmlVideo/videorender.cpp \
-#    Videowidget/klvideowidget.cpp \
-#    Videowidget/videodatacache.cpp \
+#    QmlVideo/videorender.cpp \
+    Videowidget/klvideowidget.cpp \
+    Videowidget/videodatacache.cpp \
     utils/rendermanager.cpp \
     utils/videodata.cpp \
     utils/nv12render.cpp \
@@ -49,9 +49,9 @@ HEADERS += \
     NvDecoder/Utils/NvCodecUtils.h \
     NvDecoder/Utils/NvEncoderCLIOptions.h \
     fmgdecoder/ffmpegdecoder.h \
-    QmlVideo/videorender.h \
-#    Videowidget/klvideowidget.h \
-#    Videowidget/videodatacache.h \
+#    QmlVideo/videorender.h \
+    Videowidget/klvideowidget.h \
+    Videowidget/videodatacache.h \
     utils/klvideorender.h \
     utils/rendermanager.h \
     utils/videodata.h \
