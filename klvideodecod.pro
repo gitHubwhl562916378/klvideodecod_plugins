@@ -5,8 +5,8 @@
 #-------------------------------------------------
 
 #QT       -= gui
-QT       +=  widgets
-#CONFIG -= qt
+#QT       +=  quick
+CONFIG -= qt
 
 TARGET = klvideodecod
 TEMPLATE = lib
@@ -29,12 +29,12 @@ SOURCES += \
     NvDecoder/nvidiadecoder.cpp \
     fmgdecoder/ffmpegdecoder.cpp \
 #    QmlVideo/videorender.cpp \
-    Videowidget/klvideowidget.cpp \
-    Videowidget/videodatacache.cpp \
-    utils/rendermanager.cpp \
-    utils/videodata.cpp \
-    utils/nv12render.cpp \
-    utils/yuvrender.cpp
+#    Videowidget/klvideowidget.cpp \
+#    Videowidget/videodatacache.cpp \
+#    utils/rendermanager.cpp \
+#    utils/videodata.cpp \
+#    utils/nv12render.cpp \
+#    utils/yuvrender.cpp
 
 HEADERS += \
         klvideodecod_global.h \ 
@@ -50,13 +50,13 @@ HEADERS += \
     NvDecoder/Utils/NvEncoderCLIOptions.h \
     fmgdecoder/ffmpegdecoder.h \
 #    QmlVideo/videorender.h \
-    Videowidget/klvideowidget.h \
-    Videowidget/videodatacache.h \
-    utils/klvideorender.h \
-    utils/rendermanager.h \
-    utils/videodata.h \
-    utils/nv12render.h \
-    utils/yuvrender.h
+#    Videowidget/klvideowidget.h \
+#    Videowidget/videodatacache.h \
+#    utils/klvideorender.h \
+#    utils/rendermanager.h \
+#    utils/videodata.h \
+#    utils/nv12render.h \
+#    utils/yuvrender.h
 
 win32{
 contains(QT_ARCH, i386):{
