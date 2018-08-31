@@ -15,12 +15,15 @@ public:
     ~NvidiaDecoder();
     bool initsize() override;
     unsigned char* framePtr() override;
+    int fps() const;
     bool decode(const char* source, std::string &erroStr, std::function<void(AVPixelFormat, unsigned char *, int, int)> frameHandler, std::mutex *mtx = nullptr) override;
     void stop() override;
 
 private:
     bool m_isRun = true;
+    int m_fps = 0;
     NvDecoder *m_nvdecod{nullptr};
+    FFmpegDemuxer *m_demuxer{nullptr};
     static std::vector<std::pair<CUcontext,std::string>> m_ctxV;
     unsigned char *m_ptr{nullptr};
     int m_curIndex = 0;

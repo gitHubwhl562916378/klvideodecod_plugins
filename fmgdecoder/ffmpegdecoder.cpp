@@ -24,6 +24,11 @@ unsigned char *FFmpegDecoder::framePtr()
     return m_buffer;
 }
 
+int FFmpegDecoder::fps() const
+{
+    return m_fps;
+}
+
 bool FFmpegDecoder::decode(const char* source, std::string &erroStr, std::function<void(AVPixelFormat,unsigned char*,int,int)> frameHandler, std::mutex *mtx)
 {
     m_run = true;
@@ -116,13 +121,12 @@ bool FFmpegDecoder::decode(const char* source, std::string &erroStr, std::functi
 
     AVStream *stream = pAVFomatContext->streams[videoStreamIndex];
     int vden = stream->avg_frame_rate.den,vnum = stream->avg_frame_rate.num;
-    int video_fps;
     if(vden <= 0 || vnum <= 0){
-        video_fps = 25;
-        std::cout << "use default " << video_fps << std::endl;
+        m_fps = 25;
+        std::cout << "use default " << m_fps << std::endl;
     }else{
-        video_fps = vnum/vden;
-        std::cout << "video fps:" << video_fps << std::endl;
+        m_fps = vnum/vden;
+        std::cout << "video fps:" << m_fps << std::endl;
     }
 
     result = avcodec_open2(pAVCodecContext,pAVCodec,nullptr);

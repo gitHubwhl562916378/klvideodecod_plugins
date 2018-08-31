@@ -11,6 +11,8 @@ NvidiaDecoder::~NvidiaDecoder()
 //    }
     if(m_nvdecod)
     delete m_nvdecod;
+    if(m_demuxer)
+    delete m_demuxer;
 }
 
 bool NvidiaDecoder::initsize()
@@ -58,6 +60,11 @@ unsigned char *NvidiaDecoder::framePtr()
     return m_ptr;
 }
 
+int NvidiaDecoder::fps() const
+{
+    return m_fps;
+}
+
 bool NvidiaDecoder::decode(const char *source, std::string &erroStr, std::function<void(AVPixelFormat, unsigned char *, int, int)> frameHandler, std::mutex *mtx)
 {
     if(!m_ctxV.size()){
@@ -68,13 +75,14 @@ bool NvidiaDecoder::decode(const char *source, std::string &erroStr, std::functi
         m_isRun = true;
         std::pair<CUcontext,std::string> v = m_ctxV.at(m_curIndex++ % m_ctxV.size());
         std::cout << "Use Contex in " << v.second << std::endl;
-        FFmpegDemuxer demuxer(source);
-        m_nvdecod = new NvDecoder(v.first, demuxer.GetWidth(), demuxer.GetHeight(), false, FFmpeg2NvCodecId(demuxer.GetVideoCodec()),mtx);
+        m_demuxer = new FFmpegDemuxer(source);
+        m_fps = m_demuxer->fps();
+        m_nvdecod = new NvDecoder(v.first, m_demuxer->GetWidth(), m_demuxer->GetHeight(), false, FFmpeg2NvCodecId(m_demuxer->GetVideoCodec()),mtx);
         int nVideoBytes = 0, nFrameReturned = 0, nFrame = 0;
         uint8_t *pVideo = NULL;
         uint8_t **ppFrame;
         do {
-            demuxer.Demux(&pVideo, &nVideoBytes);
+            m_demuxer->Demux(&pVideo, &nVideoBytes);
             m_nvdecod->Decode(pVideo, nVideoBytes, &ppFrame, &nFrameReturned);
             if (!nFrame && nFrameReturned)
                 LOG(INFO) << m_nvdecod->GetVideoInfo();
