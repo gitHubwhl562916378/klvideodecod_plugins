@@ -74,7 +74,6 @@ void Klvideowidget::stop()
     }
     m_ptr = nullptr;
     m_mtx = nullptr;
-    update();
     emit sigVideoStoped();
     VideoDataCache::removeVideoData(url());
 }
