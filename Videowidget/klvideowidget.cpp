@@ -40,7 +40,7 @@ void Klvideowidget::startPlay(QString url, QString decoderName)
         connect(m_decoThr,SIGNAL(sigVideoStarted()),this,SLOT(slotVideoStarted()));
     }
     connect(m_decoThr,SIGNAL(sigFrameLoaded()),this,SLOT(update()));
-    connect(m_decoThr,&VideoData::finished,this,[this]{m_decoThr = nullptr;stop();});
+    connect(m_decoThr,&VideoData::finished,this,[this]{stop();});
     connect(m_decoThr,SIGNAL(sigError(QString)),this,SIGNAL(sigError(QString)));
     m_decoThr->start();
 }
@@ -74,6 +74,7 @@ void Klvideowidget::stop()
     }
     m_ptr = nullptr;
     m_mtx = nullptr;
+    update();
     emit sigVideoStoped();
     VideoDataCache::removeVideoData(url());
 }
