@@ -43,5 +43,6 @@ unix{
 INCLUDEPATH += $$PWD/../../package/include \
                $$PWD/../../3rd/ffmpeg/linux/include
 
-LIBS += -L$$PWD/../../package/lib/linux/qml -lklvideodecod
+#LIBS += -L$$PWD/../../package/lib/linux/qml -lklvideodecod
+LIBS += -L/usr/local/klvideodecod/lib/qml -lklvideodecod
 }

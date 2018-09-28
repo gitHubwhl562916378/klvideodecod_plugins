@@ -85,7 +85,9 @@ void VideoData::run()
             }else{
                 m_ptr = ptr;
                 emit sigFrameLoaded();
-                QThread::msleep(m_decoder->fps());
+                if(!m_isRtsp){
+                    QThread::msleep(::floor(1000 / m_decoder->fps()));
+                }
             }
     },m_mtx);
     m_isFirst = true;

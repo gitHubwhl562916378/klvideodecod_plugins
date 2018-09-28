@@ -11,7 +11,7 @@ ApplicationWindow {
     VideoRender{
         id: rtspVieo
         anchors.fill: parent
-        videoSource: "rtsp:192.168.2.22:5554/1"
+        videoSource: "rtsp://admin:123ABCabc@192.168.2.239/h264/ch1/main/av_stream" //rtsp:192.168.2.22:5554/1
         decoder: "h264_cuvid" //传空或不传为软解；传h264_cuvid为硬解，当系统不支持时自动变为软解
         Text{
             id: errorText
