@@ -27,7 +27,7 @@ private:
     int iVideoStream;
     bool bMp4H264;
     AVCodecID eVideoCodec;
-    int nWidth, nHeight, nBitDepth;
+    int nWidth, nHeight, nBitDepth,nfps = 0;
 
 public:
     class DataProvider {
@@ -53,6 +53,15 @@ private:
         }
 
         //fmtc->streams[iVideoStream]->need_parsing = AVSTREAM_PARSE_NONE;
+        AVStream *stream = fmtc->streams[iVideoStream];
+        int vden = stream->avg_frame_rate.den,vnum = stream->avg_frame_rate.num;
+        if(vden <= 0 || vnum <= 0){
+            nfps = 25;
+            LOG(INFO) << "use default " << nfps << std::endl;
+        }else{
+            nfps = vnum/vden;
+            LOG(INFO) << "video fps:" << nfps << std::endl;
+        }
         eVideoCodec = fmtc->streams[iVideoStream]->codecpar->codec_id;
         nWidth = fmtc->streams[iVideoStream]->codecpar->width;
         nHeight = fmtc->streams[iVideoStream]->codecpar->height;
@@ -160,6 +169,9 @@ public:
     }
     int GetFrameSize() {
         return nBitDepth == 8 ? nWidth * nHeight * 3 / 2: nWidth * nHeight * 3;
+    }
+    int fps(){
+        return nfps;
     }
     bool Demux(uint8_t **ppVideo, int *pnVideoBytes) {
         if (!fmtc) {
