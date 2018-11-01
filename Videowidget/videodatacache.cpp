@@ -7,7 +7,7 @@ QMap<QString,VideoData*> *VideoDataCache::m_videoDataMap = new QMap<QString,Vide
 VideoDataCache::~VideoDataCache()
 {
     for(QMap<QString,VideoData*>::Iterator iter = m_videoDataMap->begin(); iter != m_videoDataMap->end(); iter++){
-        iter.value()->deleteLater();
+        delete iter.value();
     }
 }
 

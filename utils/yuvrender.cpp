@@ -2,7 +2,7 @@
 #include <iostream>
 YuvRender::~YuvRender()
 {
-    glDeleteTextures(sizeof(textures),textures);
+    glDeleteTextures(sizeof(textures) / sizeof(GLuint),textures);
 }
 
 void YuvRender::initialize(bool horizontal, bool vertical)

@@ -4,7 +4,7 @@
 
 Nv12Render::~Nv12Render()
 {
-    glDeleteTextures(sizeof(textures),textures);
+    glDeleteTextures(sizeof(textures) / sizeof(GLuint),textures);
 }
 
 void Nv12Render::initialize(bool horizontal, bool vertical)
