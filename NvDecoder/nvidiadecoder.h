@@ -24,7 +24,6 @@ private:
     int m_fps = 0;
     NvDecoder *m_nvdecod{nullptr};
     FFmpegDemuxer *m_demuxer{nullptr};
-    static std::vector<std::pair<CUcontext,std::string>> m_ctxV;
     unsigned char *m_ptr{nullptr};
     int m_curIndex = 0;
 };

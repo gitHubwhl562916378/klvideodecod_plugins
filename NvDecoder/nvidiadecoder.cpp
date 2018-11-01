@@ -1,14 +1,16 @@
 #include "nvidiadecoder.h"
 
 simplelogger::Logger *logger = simplelogger::LoggerFactory::CreateConsoleLogger();
-std::vector<std::pair<CUcontext,std::string>> NvidiaDecoder::m_ctxV;
+bool isInitsized = false;
+std::mutex gmtx;
+std::vector<std::pair<CUcontext,std::string>> m_ctxV;
 NvidiaDecoder::~NvidiaDecoder()
 {
-//    int n = m_ctxV.size();
-//    for(int i = 0; i < n; i++){
-//        cuCtxDestroy(m_ctxV.back().first);
-//        m_ctxV.pop_back();
-//    }
+    int n = m_ctxV.size();
+    for(int i = 0; i < n; i++){
+        cuCtxDestroy(m_ctxV.back().first);
+        m_ctxV.pop_back();
+    }
     if(m_nvdecod)
     delete m_nvdecod;
     if(m_demuxer)
@@ -17,7 +19,7 @@ NvidiaDecoder::~NvidiaDecoder()
 
 bool NvidiaDecoder::initsize()
 {
-    static bool isInitsized = false;
+    gmtx.lock();
     if(!isInitsized){
         ck(cuInit(0));
         int nGpu = 0;
@@ -46,7 +48,9 @@ bool NvidiaDecoder::initsize()
             }
         }
         isInitsized = true;
+        LOG(INFO) << "nvidia decoder initsized end " << isInitsized << " ptr is " << &isInitsized << std::endl;
     }
+    gmtx.unlock();
 
     if(m_ctxV.empty()){
         return false;
