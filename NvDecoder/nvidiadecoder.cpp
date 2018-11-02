@@ -6,11 +6,6 @@ std::mutex gmtx;
 std::vector<std::pair<CUcontext,std::string>> m_ctxV;
 NvidiaDecoder::~NvidiaDecoder()
 {
-    int n = m_ctxV.size();
-    for(int i = 0; i < n; i++){
-        cuCtxDestroy(m_ctxV.back().first);
-        m_ctxV.pop_back();
-    }
     if(m_nvdecod)
     delete m_nvdecod;
     if(m_demuxer)
