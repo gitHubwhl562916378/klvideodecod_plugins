@@ -13,6 +13,7 @@ Klvideowidget::Klvideowidget(QWidget *parent):
 Klvideowidget::~Klvideowidget()
 {
     stop();
+    makeCurrent();
     delete m_renderM;
 }
 
@@ -90,18 +91,10 @@ void Klvideowidget::paintGL()
     if(!m_decoThr)return;
     if(m_mtx){
         m_mtx->lock();
-        if(m_state != Playing){
-            m_renderM->render(AVPixelFormat(m_decoThr->m_fmt),nullptr,m_videoW,m_videoH);
-        }else{
-            m_renderM->render(AVPixelFormat(m_decoThr->m_fmt),m_decoThr->framePtr(),m_videoW,m_videoH);
-        }
+        m_renderM->render(AVPixelFormat(m_decoThr->m_fmt),m_decoThr->framePtr(),m_videoW,m_videoH);
         m_mtx->unlock();
     }else{
-        if(m_state != Playing){
-            m_renderM->render(AVPixelFormat(m_decoThr->m_fmt),nullptr,m_videoW,m_videoH);
-        }else{
-            m_renderM->render(AVPixelFormat(m_decoThr->m_fmt),m_decoThr->framePtr(),m_videoW,m_videoH);
-        }
+        m_renderM->render(AVPixelFormat(m_decoThr->m_fmt),m_decoThr->framePtr(),m_videoW,m_videoH);
     }
 }
 

@@ -4,6 +4,7 @@
 
 Nv12Render::~Nv12Render()
 {
+    vbo.destroy();
     glDeleteTextures(sizeof(textures) / sizeof(GLuint),textures);
 }
 

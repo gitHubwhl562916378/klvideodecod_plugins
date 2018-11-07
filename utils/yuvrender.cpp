@@ -2,6 +2,7 @@
 #include <iostream>
 YuvRender::~YuvRender()
 {
+    vbo.destroy();
     glDeleteTextures(sizeof(textures) / sizeof(GLuint),textures);
 }
 
