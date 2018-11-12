@@ -1,3 +1,5 @@
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
 #include "klvideowidget.h"
 #include "../utils/rendermanager.h"
 #include "videodatacache.h"
@@ -15,6 +17,9 @@ Klvideowidget::~Klvideowidget()
     stop();
     makeCurrent();
     delete m_renderM;
+    if(render_){
+        delete render_;
+    }
 }
 
 Klvideowidget::PlayState Klvideowidget::playState() const
@@ -41,7 +46,14 @@ void Klvideowidget::startPlay(QString url, QString decoderName)
         connect(m_decoThr,SIGNAL(sigVideoStarted()),this,SLOT(slotVideoStarted()));
     }
     connect(m_decoThr,SIGNAL(sigFrameLoaded()),this,SLOT(update()));
-    connect(m_decoThr,&VideoData::finished,this,[this]{stop();});
+    connect(m_decoThr,SIGNAL(finished()),this,SLOT(stop()),Qt::UniqueConnection);
+    connect(m_decoThr,&VideoData::destroyed,this,[this](QObject*){
+        m_decoThr = nullptr;
+        m_ptr = nullptr;
+        m_mtx = nullptr;
+        update();
+        qDebug() << "videodata prepare deleted";
+    },Qt::DirectConnection);
     connect(m_decoThr,SIGNAL(sigError(QString)),this,SIGNAL(sigError(QString)));
     m_decoThr->start();
 }
@@ -70,7 +82,9 @@ void Klvideowidget::stop()
 {
     m_state = Stop;
     if(m_decoThr){
-        m_decoThr->disconnect(this);
+        disconnect(m_decoThr,SIGNAL(sigFrameLoaded()),this,SLOT(update()));
+        disconnect(m_decoThr,SIGNAL(sigVideoStarted()),this,SLOT(slotVideoStarted()));
+        disconnect(m_decoThr,SIGNAL(sigError(QString)),this,SIGNAL(sigError(QString)));
         m_decoThr = nullptr;
     }
     m_ptr = nullptr;
@@ -84,12 +98,17 @@ void Klvideowidget::initializeGL()
 {
     m_renderM->registerRender(AV_PIX_FMT_NV12);
     m_renderM->registerRender(AV_PIX_FMT_YUV420P);
+    render_ = createRender();
+    if(render_){
+        render_->initsize(QOpenGLContext::currentContext());
+    }
 }
 
 void Klvideowidget::paintGL()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+    f->glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if(!m_decoThr)return;
     if(m_mtx){
         m_mtx->lock();
@@ -97,6 +116,9 @@ void Klvideowidget::paintGL()
         m_mtx->unlock();
     }else{
         m_renderM->render(AVPixelFormat(m_decoThr->m_fmt),m_decoThr->framePtr(),m_videoW,m_videoH);
+    }
+    if(render_){
+        render_->render(QOpenGLContext::currentContext());
     }
 }
 

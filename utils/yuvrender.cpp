@@ -163,5 +163,6 @@ void YuvRender::render(uchar *yuvPtr, int w, int h)
     glDrawArrays(GL_QUADS,0,4);
     program.disableAttributeArray("vertexIn");
     program.disableAttributeArray("textureIn");
+    vbo.release();
     program.release();
 }

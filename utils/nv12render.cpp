@@ -121,8 +121,6 @@ void Nv12Render::initialize(bool horizontal, bool vertical)
 
 void Nv12Render::render(uchar *nv12Ptr, int w, int h)
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
     if(!nv12Ptr){
         return;
@@ -156,5 +154,6 @@ void Nv12Render::render(uchar *nv12Ptr, int w, int h)
     glDrawArrays(GL_QUADS,0,4);
     program.disableAttributeArray("vertexIn");
     program.disableAttributeArray("textureIn");
+    vbo.release();
     program.release();
 }
