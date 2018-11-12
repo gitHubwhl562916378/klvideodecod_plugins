@@ -8,6 +8,12 @@
 #include <QTimer>
 
 QT_FORWARD_DECLARE_CLASS(VideoData)
+class KLRender{
+public:
+    virtual void initsize(QOpenGLContext *ctx) = 0;
+    virtual void render(QOpenGLContext *ctx) = 0;
+};
+
 class KLVIDEODECODSHARED_EXPORT Klvideowidget : public QOpenGLWidget
 {
     Q_OBJECT
@@ -35,6 +41,7 @@ signals:
     void sigVideoStoped();
 
 protected:
+    virtual KLRender* createRender() const{return nullptr;}
     void initializeGL() override;
     void paintGL() override;
 
@@ -47,6 +54,7 @@ private:
     int m_videoW,m_videoH;
     VideoData *m_decoThr{nullptr};
     QString m_url,m_decoderName;
+    KLRender *render_{nullptr};
 
 private slots:
     void slotVideoStarted();
