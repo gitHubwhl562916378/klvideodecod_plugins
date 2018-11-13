@@ -47,9 +47,7 @@ protected:
 
 private:
     PlayState m_state = Stop;
-    std::mutex *m_mtx{nullptr};
     KLvideoRenderManager *m_renderM{nullptr};
-    uchar* m_ptr{nullptr};
     AVPixelFormat m_fmt;
     int m_videoW,m_videoH;
     VideoData *m_decoThr{nullptr};

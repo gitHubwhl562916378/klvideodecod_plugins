@@ -44,11 +44,14 @@ void Klvideowidget::startPlay(QString url, QString decoderName)
 //        }
         connect(m_decoThr,SIGNAL(sigVideoStarted()),this,SLOT(slotVideoStarted()));
     }
-    connect(m_decoThr,SIGNAL(sigFrameLoaded()),this,SLOT(slotFrameLoaded()));
+    connect(m_decoThr,SIGNAL(sigFrameLoaded()),this,SLOT(update()));
     connect(m_decoThr,SIGNAL(finished()),this,SLOT(stop()));
-    connect(m_decoThr,&VideoData::destroyed,this,[this](QObject*){
-        m_decoThr = nullptr;
-        qDebug() << "videodata prepare deleted";
+    connect(m_decoThr,&VideoData::destroyed,this,[this](QObject*obj){
+        if(qobject_cast<VideoData*>(obj) == m_decoThr){
+            m_decoThr = nullptr;
+            qDebug() << "video data initsized------------";
+        }
+        qDebug() << "video data prepare removed";
     },Qt::DirectConnection);
     connect(m_decoThr,SIGNAL(sigError(QString)),this,SIGNAL(sigError(QString)));
     m_decoThr->start();
@@ -78,7 +81,10 @@ void Klvideowidget::stop()
 {
     m_state = Stop;
     if(m_decoThr){
-        m_decoThr->disconnect(this);
+        disconnect(m_decoThr,SIGNAL(sigVideoStarted()),this,SLOT(slotVideoStarted()));
+        disconnect(m_decoThr,SIGNAL(sigFrameLoaded()),this,SLOT(update()));
+        disconnect(m_decoThr,SIGNAL(finished()),this,SLOT(stop()));
+        disconnect(m_decoThr,SIGNAL(sigError(QString)),this,SIGNAL(sigError(QString)));
         m_decoThr = nullptr;
     }
     update();
@@ -121,10 +127,4 @@ void Klvideowidget::slotVideoStarted()
     m_videoH = m_decoThr->m_height;
     m_state = Playing;
     emit sigVideoStart(m_decoThr->m_width,m_decoThr->m_height);
-}
-
-void Klvideowidget::slotFrameLoaded()
-{
-    m_decoThr = qobject_cast<VideoData*>(sender());
-    update();
 }

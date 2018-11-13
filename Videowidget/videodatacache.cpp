@@ -38,7 +38,7 @@ void VideoDataCache::removeVideoData(QString url)
     if(!m_videoPlayCountMap->value(url)){
         VideoData* decoTrh = m_videoDataMap->take(url);
         if(decoTrh->isRunning()){
-            connect(decoTrh,SIGNAL(finished()),decoTrh,SLOT(deleteLater()));
+            connect(decoTrh,&VideoData::finished,decoTrh,[decoTrh]{delete decoTrh;});
             decoTrh->requestInterruption();
         }else{
             delete decoTrh;

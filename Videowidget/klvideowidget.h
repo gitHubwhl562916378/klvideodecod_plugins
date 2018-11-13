@@ -56,7 +56,6 @@ private:
 
 private slots:
     void slotVideoStarted();
-    void slotFrameLoaded();
 };
 
 #endif // KLVIDEOWIDGET_H

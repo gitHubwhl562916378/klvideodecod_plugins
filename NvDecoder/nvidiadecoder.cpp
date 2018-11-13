@@ -74,7 +74,7 @@ bool NvidiaDecoder::decode(const char *source, std::string &erroStr, std::functi
     try{
         m_isRun = true;
         std::pair<CUcontext,std::string> v = m_ctxV.at(gcurIndex++ % m_ctxV.size());
-        std::cout << "Use Contex " << (gcurIndex - 1) % m_ctxV.size() << " in " << v.second << std::endl;
+        std::cout << "Use Contex in" << v.second << " ctx size " << m_ctxV.size() << std::endl;
         m_demuxer = new FFmpegDemuxer(source);
         m_fps = m_demuxer->fps();
         m_nvdecod = new NvDecoder(v.first, m_demuxer->GetWidth(), m_demuxer->GetHeight(), false, FFmpeg2NvCodecId(m_demuxer->GetVideoCodec()),mtx);
