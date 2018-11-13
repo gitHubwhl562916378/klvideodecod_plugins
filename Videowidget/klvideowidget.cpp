@@ -33,7 +33,6 @@ void Klvideowidget::startPlay(QString url, QString decoderName)
     m_decoThr = VideoDataCache::createVideoData(url,decoderName);
     m_url = url;
     m_decoderName = decoderName;
-    m_mtx = m_decoThr->m_mtx;
     if(m_decoThr->isDecoding()){
         m_videoW = m_decoThr->m_width;
         m_videoH = m_decoThr->m_height;
@@ -45,13 +44,10 @@ void Klvideowidget::startPlay(QString url, QString decoderName)
 //        }
         connect(m_decoThr,SIGNAL(sigVideoStarted()),this,SLOT(slotVideoStarted()));
     }
-    connect(m_decoThr,SIGNAL(sigFrameLoaded()),this,SLOT(update()));
-    connect(m_decoThr,SIGNAL(finished()),this,SLOT(stop()),Qt::UniqueConnection);
+    connect(m_decoThr,SIGNAL(sigFrameLoaded()),this,SLOT(slotFrameLoaded()));
+    connect(m_decoThr,SIGNAL(finished()),this,SLOT(stop()));
     connect(m_decoThr,&VideoData::destroyed,this,[this](QObject*){
         m_decoThr = nullptr;
-        m_ptr = nullptr;
-        m_mtx = nullptr;
-        update();
         qDebug() << "videodata prepare deleted";
     },Qt::DirectConnection);
     connect(m_decoThr,SIGNAL(sigError(QString)),this,SIGNAL(sigError(QString)));
@@ -82,13 +78,9 @@ void Klvideowidget::stop()
 {
     m_state = Stop;
     if(m_decoThr){
-        disconnect(m_decoThr,SIGNAL(sigFrameLoaded()),this,SLOT(update()));
-        disconnect(m_decoThr,SIGNAL(sigVideoStarted()),this,SLOT(slotVideoStarted()));
-        disconnect(m_decoThr,SIGNAL(sigError(QString)),this,SIGNAL(sigError(QString)));
+        m_decoThr->disconnect(this);
         m_decoThr = nullptr;
     }
-    m_ptr = nullptr;
-    m_mtx = nullptr;
     update();
     emit sigVideoStoped();
     VideoDataCache::removeVideoData(url());
@@ -110,10 +102,10 @@ void Klvideowidget::paintGL()
     f->glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     f->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     if(!m_decoThr)return;
-    if(m_mtx){
-        m_mtx->lock();
+    if(m_decoThr->m_mtx){
+        m_decoThr->m_mtx->lock();
         m_renderM->render(AVPixelFormat(m_decoThr->m_fmt),m_decoThr->framePtr(),m_videoW,m_videoH);
-        m_mtx->unlock();
+        m_decoThr->m_mtx->unlock();
     }else{
         m_renderM->render(AVPixelFormat(m_decoThr->m_fmt),m_decoThr->framePtr(),m_videoW,m_videoH);
     }
@@ -129,4 +121,10 @@ void Klvideowidget::slotVideoStarted()
     m_videoH = m_decoThr->m_height;
     m_state = Playing;
     emit sigVideoStart(m_decoThr->m_width,m_decoThr->m_height);
+}
+
+void Klvideowidget::slotFrameLoaded()
+{
+    m_decoThr = qobject_cast<VideoData*>(sender());
+    update();
 }

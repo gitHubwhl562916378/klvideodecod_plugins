@@ -25,7 +25,6 @@ private:
     NvDecoder *m_nvdecod{nullptr};
     FFmpegDemuxer *m_demuxer{nullptr};
     unsigned char *m_ptr{nullptr};
-    int m_curIndex = 0;
 };
 
 #endif // NVIDIADECODER_H
