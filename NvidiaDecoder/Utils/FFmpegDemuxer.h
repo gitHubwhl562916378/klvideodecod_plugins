@@ -133,7 +133,7 @@ private:
 //        av_dict_set(&opt,"buffer_size","1024000",0);
 //        av_dict_set(&opt,"max_delay","0",0);
         av_dict_set(&opt,"rtsp_transport","tcp",0);
-        av_dict_set(&opt,"stimeout","5000000",0);
+        av_dict_set(&opt,"stimeout","10000000",0);
         ck(avformat_open_input(&ctx, szFilePath, NULL, &opt));
         return ctx;
     }

@@ -106,6 +106,14 @@ bool Fmgdecoder::decode(const char* source, std::string &erroStr, std::function<
         return false;
     }
 
+    if(pAVCodecContext->pix_fmt == -1){
+        erroStr += "unknown video format errorCode: ";
+        erroStr += std::to_string(result);
+        av_frame_free(&pAVFrame);
+        av_frame_free(&pAVFrameRGB);
+        avformat_close_input(&pAVFomatContext);
+        return false;
+    }
     pSwsContext = sws_getContext(videoWidth,videoHeight,pAVCodecContext->pix_fmt,videoWidth,videoHeight,AV_PIX_FMT_YUV420P,SWS_FAST_BILINEAR,nullptr,nullptr,nullptr);
     int numBytes = avpicture_get_size(AV_PIX_FMT_YUV420P,videoWidth,videoHeight);
     m_buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
